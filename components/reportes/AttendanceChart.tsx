@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
@@ -20,7 +20,10 @@ export function AttendanceChart({ diasTrabajados, diasTotales }: AttendanceChart
 
     const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {
-            const porcentaje = ((payload[0].value / diasTotales) * 100).toFixed(1)
+            const porcentaje = diasTotales
+                ? ((payload[0].value / diasTotales) * 100).toFixed(1)
+                : '0.0'
+
             return (
                 <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
                     <p className="text-sm font-medium">{payload[0].name}</p>
@@ -49,7 +52,12 @@ export function AttendanceChart({ diasTrabajados, diasTotales }: AttendanceChart
                             cx="50%"
                             cy="50%"
                             labelLine={false}
-                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                            label={({ name, percent }: any) => {
+                                const pct = percent
+                                    ? (percent * 100).toFixed(0)
+                                    : '0'
+                                return `${name}: ${pct}%`
+                            }}
                             outerRadius={100}
                             fill="#8884d8"
                             dataKey="value"

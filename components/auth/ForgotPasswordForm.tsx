@@ -73,15 +73,14 @@ export function ForgotPasswordForm() {
                 // Manejar error de rate limit - verificar múltiples formas
                 const errorMsg = error.message?.toLowerCase() || ''
                 const errorCode = error.code?.toLowerCase() || ''
-                const isRateLimit = 
+                const isRateLimit =
                     error.status === 429 ||
                     errorCode === 'over_email_send_rate_limit' ||
                     errorCode.includes('rate_limit') ||
                     errorCode.includes('over_email_send_rate_limit') ||
-                    errorMsg.includes('rate limit') || 
+                    errorMsg.includes('rate limit') ||
                     errorMsg.includes('too many requests') ||
-                    errorMsg.includes('too many') ||
-                    error.isRateLimit === true
+                    errorMsg.includes('too many')
 
                 if (isRateLimit) {
                     setRateLimitError(true)
@@ -109,16 +108,16 @@ export function ForgotPasswordForm() {
             // Verificar si es rate limit también en el catch (por si no se detectó antes)
             const errorMsg = error.message?.toLowerCase() || ''
             const errorCode = error.code?.toLowerCase() || ''
-            const isRateLimitError = 
+            const isRateLimitError =
                 error.isRateLimit === true ||
                 error.status === 429 ||
                 errorCode === 'over_email_send_rate_limit' ||
                 errorCode.includes('rate_limit') ||
                 errorCode.includes('over_email_send_rate_limit') ||
-                errorMsg.includes('rate limit') || 
+                errorMsg.includes('rate limit') ||
                 errorMsg.includes('too many requests') ||
                 errorMsg.includes('too many')
-            
+
             if (isRateLimitError) {
                 // Configurar estado visual para rate limit
                 setRateLimitError(true)
@@ -236,16 +235,16 @@ export function ForgotPasswordForm() {
                             )}
                         </div>
 
-                        <Button 
-                            type="submit" 
-                            className="w-full" 
+                        <Button
+                            type="submit"
+                            className="w-full"
                             disabled={loading || (rateLimitCooldown !== null && rateLimitCooldown > 0)}
                         >
-                            {loading 
-                                ? 'Enviando...' 
+                            {loading
+                                ? 'Enviando...'
                                 : rateLimitCooldown && rateLimitCooldown > 0
-                                ? `Espera ${formatTime(rateLimitCooldown)}`
-                                : 'Enviar instrucciones'
+                                    ? `Espera ${formatTime(rateLimitCooldown)}`
+                                    : 'Enviar instrucciones'
                             }
                         </Button>
 
