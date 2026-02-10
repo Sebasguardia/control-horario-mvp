@@ -4,9 +4,11 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 // GET /api/jornadas/[id]/eventos - Obtener eventos de una jornada
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await context.params   // ← CAMBIO CLAVE
+
         const supabase = await createServerSupabaseClient()
         const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -17,11 +19,10 @@ export async function GET(
             )
         }
 
-        // Verificar que la jornada pertenece al usuario
         const { data: jornada } = await supabase
             .from('jornadas')
             .select('id')
-            .eq('id', params.id)
+            .eq('id', id)
             .eq('user_id', user.id)
             .single()
 
@@ -35,7 +36,7 @@ export async function GET(
         const { data, error } = await supabase
             .from('eventos_jornada')
             .select('*')
-            .eq('jornada_id', params.id)
+            .eq('jornada_id', id)
             .order('timestamp', { ascending: true })
 
         if (error) {
@@ -59,9 +60,11 @@ export async function GET(
 // POST /api/jornadas/[id]/eventos - Crear evento de jornada
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await context.params   // ← CAMBIO CLAVE
+
         const supabase = await createServerSupabaseClient()
         const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -72,11 +75,10 @@ export async function POST(
             )
         }
 
-        // Verificar que la jornada pertenece al usuario
         const { data: jornada } = await supabase
             .from('jornadas')
             .select('id')
-            .eq('id', params.id)
+            .eq('id', id)
             .eq('user_id', user.id)
             .single()
 
@@ -90,7 +92,10 @@ export async function POST(
         const body = await request.json()
         const { tipo_evento, metadata } = body
 
-        if (!tipo_evento || !['inicio', 'pausa', 'reanudacion', 'finalizacion'].includes(tipo_evento)) {
+        if (
+            !tipo_evento ||
+            !['inicio', 'pausa', 'reanudacion', 'finalizacion'].includes(tipo_evento)
+        ) {
             return NextResponse.json(
                 { error: 'Tipo de evento inválido' },
                 { status: 400 }
@@ -102,7 +107,7 @@ export async function POST(
         const { data, error } = await supabase
             .from('eventos_jornada')
             .insert({
-                jornada_id: params.id,
+                jornada_id: id,
                 tipo_evento,
                 timestamp: ahora,
                 metadata: metadata || null,
