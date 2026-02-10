@@ -1,0 +1,10 @@
+import React from 'react'
+import { SignupForm } from '@/components/auth/SignupForm'
+
+export default function SignupPage() {
+	return (
+		<section>
+			<SignupForm />
+		</section>
+	)
+}
